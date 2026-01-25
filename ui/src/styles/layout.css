@@ -1,10 +1,11 @@
 .shell {
-  --shell-pad: 16px;
+  --shell-pad: clamp(12px, 2vw, 20px);
   --shell-gap: 16px;
-  --shell-nav-width: 220px;
-  --shell-topbar-height: 56px;
-  --shell-focus-duration: 220ms;
-  --shell-focus-ease: cubic-bezier(0.2, 0.85, 0.25, 1);
+  --shell-nav-width: clamp(200px, 18vw, 260px);
+  --shell-topbar-height: 52px;
+  --shell-content-max: 1400px;
+  --shell-focus-duration: var(--duration-slow, 300ms);
+  --shell-focus-ease: var(--ease-out, cubic-bezier(0.2, 0.85, 0.25, 1));
   height: 100vh;
   display: grid;
   grid-template-columns: var(--shell-nav-width) minmax(0, 1fr);
@@ -179,8 +180,8 @@
 
 /* Nav collapse toggle button */
 .nav-collapse-toggle {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -188,8 +189,9 @@
   border: 1px solid transparent;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 150ms ease, border-color 150ms ease;
-  margin-bottom: 16px;
+  transition: background var(--duration-fast, 100ms) var(--ease-out),
+    border-color var(--duration-fast, 100ms) var(--ease-out);
+  margin-bottom: 12px;
 }
 
 .nav-collapse-toggle:hover {
@@ -276,14 +278,16 @@
   align-items: center;
   justify-content: flex-start;
   gap: 8px;
-  padding: 10px 12px 10px 14px;
-  border-radius: 12px;
+  padding: 8px 10px 8px 12px;
+  border-radius: 8px;
   border: 1px solid transparent;
   background: transparent;
   color: var(--muted);
   cursor: pointer;
   text-decoration: none;
-  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+  transition: border-color var(--duration-fast, 100ms) var(--ease-out),
+    background var(--duration-fast, 100ms) var(--ease-out),
+    color var(--duration-fast, 100ms) var(--ease-out);
 }
 
 .nav-item__icon {
@@ -321,13 +325,12 @@
 
 .nav-item.active {
   color: var(--text);
-  border-color: rgba(245, 159, 74, 0.45);
-  background: rgba(245, 159, 74, 0.12);
+  border-color: var(--accent-muted, rgba(245, 159, 74, 0.15));
+  background: var(--accent-subtle, rgba(245, 159, 74, 0.08));
 }
 
 .nav-item.active::before {
   background: var(--accent);
-  box-shadow: 0 0 12px rgba(245, 159, 74, 0.4);
 }
 
 .content {
