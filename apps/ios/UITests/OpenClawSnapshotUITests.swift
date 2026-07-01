@@ -111,8 +111,8 @@ final class OpenClawSnapshotUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Continue"].waitForExistence(timeout: 8))
         app.buttons["Continue"].tap()
         app.tap()
-        XCTAssertTrue(app.buttons["Set Up Manually"].waitForExistence(timeout: 8))
-        app.buttons["Set Up Manually"].tap()
+        XCTAssertTrue(app.buttons["Set up manually"].waitForExistence(timeout: 8))
+        app.buttons["Set up manually"].tap()
 
         let setupCodeField = app.textFields["Paste setup code"]
         XCTAssertTrue(setupCodeField.waitForExistence(timeout: 5))
@@ -123,8 +123,8 @@ final class OpenClawSnapshotUITests: XCTestCase {
         app.buttons["Done"].tap()
         app.buttons["Apply Setup Code"].tap()
 
-        XCTAssertTrue(app.staticTexts["Connected"].waitForExistence(timeout: 45))
-        app.buttons["Open OpenClaw"].tap()
+        XCTAssertTrue(app.staticTexts["You’re connected"].waitForExistence(timeout: 45))
+        app.buttons["Get started"].tap()
 
         let overview = app.buttons.containing(.staticText, identifier: "Overview").firstMatch
         XCTAssertTrue(overview.waitForExistence(timeout: 8))

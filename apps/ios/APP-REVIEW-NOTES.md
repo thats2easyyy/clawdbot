@@ -14,13 +14,13 @@ Gateway host and setup credential.
 
 1. Open the OpenClaw app.
 2. Tap `Continue`.
-3. On `Connect Gateway`, tap `Set Up Manually`.
+3. On `Connect Gateway`, tap `Set up manually`.
 4. In the `Setup Code` section, tap the `Paste setup code` field.
 5. Paste the setup code string from the App Review submission `Notes` field.
 6. Tap `Apply Setup Code`.
 7. If `Trust and connect` appears, tap `Trust and connect`.
-8. Wait for the `Connected` screen.
-9. On `Connected`, tap `Open OpenClaw`.
+8. Wait for the `You’re connected` screen.
+9. On `You’re connected`, tap `Get started`.
 10. Confirm the `Control` screen shows `Gateway Online`.
 11. Tap `Settings`.
 12. Tap `Approvals`.

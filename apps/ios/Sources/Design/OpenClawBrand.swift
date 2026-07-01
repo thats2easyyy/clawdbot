@@ -69,6 +69,21 @@ enum OpenClawBrand {
     static let graphite = Color(uiColor: adaptiveUIColor(light: (246, 247, 249), dark: (20, 22, 24)))
     static let graphiteElevated = Color(uiColor: adaptiveUIColor(light: (255, 255, 255), dark: (34, 36, 39)))
 
+    /// Activation (onboarding + gateway quick setup) surfaces: warm neutrals derived from
+    /// the brand red so first-run screens feel branded without tinting reading content.
+    static let activationCanvas = Color(uiColor: adaptiveUIColor(light: (255, 255, 255), dark: (18, 14, 15)))
+    static let activationSurface = Color(uiColor: adaptiveUIColor(light: (255, 253, 252), dark: (33, 29, 30)))
+    static let activationInsetSurface = Color(
+        uiColor: adaptiveUIColor(light: (246, 241, 238), dark: (44, 37, 38)))
+    /// Single hairline for activation surfaces; both variants share the same 13% alpha.
+    static let activationHairline = Color(
+        uiColor: adaptiveUIColor(light: (136, 44, 40), dark: (255, 210, 205)))
+        .opacity(0.13)
+    /// Accent for small text on activation canvases: dark mode needs the hotter red
+    /// to keep 13pt labels at WCAG AA (accent itself is only ~3.8:1 there).
+    static let activationAccentText = Color(
+        uiColor: adaptiveUIColor(light: (183, 56, 51), dark: (232, 92, 86)))
+
     static var sheetBackground: LinearGradient {
         LinearGradient(
             colors: [
@@ -102,6 +117,33 @@ extension View {
             .background {
                 OpenClawBrand.sheetBackground
                     .ignoresSafeArea()
+            }
+    }
+
+    /// Quiet elevated card for activation screens: warm surface, soft layered shadow,
+    /// and a brand hairline. Not Liquid Glass on purpose — these cards hold reading
+    /// content, which DESIGN.md keeps on opaque surfaces.
+    func openClawActivationSurface(cornerRadius: CGFloat = OpenClawProMetric.cardRadius) -> some View {
+        self.modifier(OpenClawActivationSurfaceModifier(cornerRadius: cornerRadius))
+    }
+}
+
+private struct OpenClawActivationSurfaceModifier: ViewModifier {
+    let cornerRadius: CGFloat
+
+    func body(content: Content) -> some View {
+        content
+            .background {
+                RoundedRectangle(cornerRadius: self.cornerRadius, style: .continuous)
+                    .fill(OpenClawBrand.activationSurface)
+                    // Same-color shadow stack (1/2/4 at 5%) reads as one soft ambient shadow.
+                    .shadow(color: .black.opacity(0.05), radius: 1, x: 0, y: 1)
+                    .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 2)
+                    .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 4)
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: self.cornerRadius, style: .continuous)
+                    .strokeBorder(OpenClawBrand.activationHairline, lineWidth: 0.75)
             }
     }
 }

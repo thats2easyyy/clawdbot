@@ -59,7 +59,6 @@ const CATALOGS = [
         "Trust and connect",
         "Trust this gateway?",
       ],
-      "apps/ios/Sources/Onboarding/OnboardingWizardView.swift": ["Save"],
       "apps/ios/Sources/RootTabs.swift": ["Agent", "Chat", "Control", "Settings", "Talk"],
       "apps/ios/WatchApp/Sources/WatchInboxView.swift": [
         "Approve",

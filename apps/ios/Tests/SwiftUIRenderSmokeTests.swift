@@ -228,6 +228,71 @@ import UIKit
         _ = Self.host(root)
     }
 
+    @Test @MainActor func gatewayQuickSetupBuildsCandidateAndEmptyStates() {
+        let gateways: [GatewayDiscoveryModel.DiscoveredGateway?] = [
+            .previewGateway,
+            nil,
+        ]
+
+        for gateway in gateways {
+            let appModel = NodeAppModel()
+            let gatewayController = GatewayConnectionController(appModel: appModel, startDiscovery: false)
+            if let gateway {
+                gatewayController._test_setGateways([gateway])
+                appModel.gatewayStatusText = "Ready to pair"
+            }
+
+            let root = GatewayQuickSetupSheet()
+                .environment(appModel)
+                .environment(gatewayController)
+                .openClawSheetChrome()
+
+            _ = Self.host(root, size: CGSize(width: 393, height: 520))
+        }
+    }
+
+    @Test @MainActor func onboardingActivationScreensBuildAcrossAppearanceAndTypeSize() {
+        let screens: [AnyView] = [
+            AnyView(OnboardingIntroStep(onContinue: {})),
+            AnyView(OnboardingWelcomeStep(
+                statusLine: "",
+                isConnecting: false,
+                onScanQRCode: {},
+                onManualSetup: {})),
+            AnyView(OnboardingSuccessStep(
+                gatewayName: "OpenClaw Gateway",
+                gatewayAddress: "openclaw.local",
+                onGetStarted: {})),
+            AnyView(NavigationStack {
+                Form {
+                    Section("Connection Mode") {
+                        OnboardingModeRow(
+                            title: "Home Network",
+                            subtitle: "LAN or Tailscale host",
+                            symbol: "house.and.flag",
+                            selected: true,
+                            action: {})
+                        OnboardingModeRow(
+                            title: "Remote Domain",
+                            subtitle: "VPS with domain",
+                            symbol: "globe",
+                            selected: false,
+                            action: {})
+                    }
+                }
+            }),
+        ]
+
+        for scheme in [ColorScheme.light, ColorScheme.dark] {
+            for screen in screens {
+                let root = screen
+                    .preferredColorScheme(scheme)
+                    .environment(\.dynamicTypeSize, .accessibility2)
+                _ = Self.host(root, size: CGSize(width: 393, height: 852))
+            }
+        }
+    }
+
     @MainActor private static func waitForPresentedAlert(in window: UIWindow) async {
         for _ in 0 ..< 10 {
             if window.rootViewController?.presentedViewController != nil { return }
