@@ -1,10 +1,11 @@
+import Network
 import OpenClawKit
 import SwiftUI
 import Testing
 import UIKit
 @testable import OpenClaw
 
-@Suite struct SwiftUIRenderSmokeTests {
+struct SwiftUIRenderSmokeTests {
     @MainActor private static func host(_ view: some View, size: CGSize? = nil) -> UIWindow {
         let frame = CGRect(origin: .zero, size: size ?? UIScreen.main.bounds.size)
         let window = UIWindow(frame: frame)
@@ -15,7 +16,7 @@ import UIKit
         return window
     }
 
-    @Test @MainActor func settingsProTabBuildsAViewHierarchy() {
+    @Test @MainActor func `settings pro tab builds A view hierarchy`() {
         let appModel = NodeAppModel()
         let gatewayController = GatewayConnectionController(appModel: appModel, startDiscovery: false)
 
@@ -27,7 +28,7 @@ import UIKit
         _ = Self.host(root)
     }
 
-    @Test @MainActor func settingsProTabBuildsInLightAndDarkMode() {
+    @Test @MainActor func `settings pro tab builds in light and dark mode`() {
         for scheme in [ColorScheme.light, ColorScheme.dark] {
             let appModel = NodeAppModel()
             let gatewayController = GatewayConnectionController(appModel: appModel, startDiscovery: false)
@@ -42,7 +43,74 @@ import UIKit
         }
     }
 
-    @Test @MainActor func rootTabsBuildsDeviceOrientationShellMatrix() {
+    @Test @MainActor func `gateway quick setup builds candidate and empty states`() {
+        let gateways: [GatewayDiscoveryModel.DiscoveredGateway?] = [
+            .previewGateway,
+            nil,
+        ]
+
+        for gateway in gateways {
+            let appModel = NodeAppModel()
+            let gatewayController = GatewayConnectionController(appModel: appModel, startDiscovery: false)
+            if let gateway {
+                gatewayController._test_setGateways([gateway])
+                appModel.gatewayStatusText = "Ready to pair"
+            }
+
+            let root = GatewayQuickSetupSheet()
+                .environment(appModel)
+                .environment(gatewayController)
+                .openClawSheetChrome()
+
+            _ = Self.host(root, size: CGSize(width: 393, height: 520))
+        }
+    }
+
+    @Test @MainActor func `onboarding activation screens build across appearance and type size`() {
+        let screens: [AnyView] = [
+            AnyView(OnboardingIntroStep(onContinue: {})),
+            AnyView(OnboardingWelcomeStep(
+                statusLine: "",
+                isConnecting: false,
+                onScanQRCode: {},
+                onManualSetup: {})),
+            AnyView(OnboardingSuccessStep(
+                gatewayName: "OpenClaw Gateway",
+                gatewayAddress: "openclaw.local",
+                onGetStarted: {})),
+            AnyView(NavigationStack {
+                Form {
+                    Section("Connection Mode") {
+                        OnboardingModeRow(
+                            title: "Home Network",
+                            subtitle: "LAN or Tailscale host",
+                            symbol: "house.and.flag",
+                            selected: true,
+                            action: {})
+                        OnboardingModeRow(
+                            title: "Remote Domain",
+                            subtitle: "VPS with domain",
+                            symbol: "globe",
+                            selected: false,
+                            action: {})
+                    }
+                }
+                .scrollContentBackground(.hidden)
+                .background(OpenClawBrand.activationCanvas)
+            }),
+        ]
+
+        for scheme in [ColorScheme.light, ColorScheme.dark] {
+            for screen in screens {
+                let root = screen
+                    .preferredColorScheme(scheme)
+                    .environment(\.dynamicTypeSize, .accessibility2)
+                _ = Self.host(root, size: CGSize(width: 393, height: 852))
+            }
+        }
+    }
+
+    @Test @MainActor func `root tabs builds device orientation shell matrix`() {
         for scenario in Self.rootTabsShellScenarios() {
             let appModel = NodeAppModel()
             let gatewayController = GatewayConnectionController(appModel: appModel, startDiscovery: false)
@@ -59,7 +127,7 @@ import UIKit
         }
     }
 
-    @Test @MainActor func rootTabsBuildGatewayStateViewHierarchies() {
+    @Test @MainActor func `root tabs build gateway state view hierarchies`() {
         for appModel in Self.rootTabsGatewayStateModels() {
             let gatewayController = GatewayConnectionController(appModel: appModel, startDiscovery: false)
 
@@ -72,7 +140,7 @@ import UIKit
         }
     }
 
-    @Test @MainActor func phoneControlHubBuildsGatewayStateViewHierarchies() {
+    @Test @MainActor func `phone control hub builds gateway state view hierarchies`() {
         for appModel in Self.rootTabsGatewayStateModels() {
             let root = RootTabsPhoneControlHub(
                 groups: RootTabs.phoneControlGroups,
@@ -84,7 +152,7 @@ import UIKit
         }
     }
 
-    @Test @MainActor func phoneControlHubBuildsLandscapeCompactState() {
+    @Test @MainActor func `phone control hub builds landscape compact state`() {
         let appModel = NodeAppModel()
         let root = RootTabsPhoneControlHub(
             groups: RootTabs.phoneControlGroups,
@@ -97,7 +165,7 @@ import UIKit
         _ = Self.host(root)
     }
 
-    @Test @MainActor func routedSidebarScreensBuildOfflineStates() {
+    @Test @MainActor func `routed sidebar screens build offline states`() {
         let appModel = NodeAppModel()
         let screens: [AnyView] = [
             AnyView(CommandCenterTab(openChat: {}, openSettings: {})),
@@ -120,7 +188,7 @@ import UIKit
         }
     }
 
-    @Test @MainActor func taskScreensBuildPhoneLandscapeCompactStates() {
+    @Test @MainActor func `task screens build phone landscape compact states`() {
         let appModel = NodeAppModel()
         let screens: [AnyView] = [
             AnyView(IPadWorkboardScreen(openChat: {}, openSettings: {})),
@@ -137,14 +205,14 @@ import UIKit
         }
     }
 
-    @Test @MainActor func voiceWakeWordsViewBuildsAViewHierarchy() {
+    @Test @MainActor func `voice wake words view builds A view hierarchy`() {
         let appModel = NodeAppModel()
         let root = NavigationStack { VoiceWakeWordsSettingsView() }
             .environment(appModel)
         _ = Self.host(root)
     }
 
-    @Test @MainActor func voiceWakeToastBuildsAViewHierarchy() {
+    @Test @MainActor func `voice wake toast builds A view hierarchy`() {
         let root = VoiceWakeToast(command: "openclaw: do something")
         _ = Self.host(root)
     }
@@ -153,7 +221,7 @@ import UIKit
         let offlineModel = NodeAppModel()
 
         let connectingModel = NodeAppModel()
-        connectingModel.gatewayStatusText = "Connecting..."
+        connectingModel.gatewayStatusText = "Connecting…"
 
         let connectedModel = NodeAppModel()
         connectedModel.enterAppleReviewDemoMode()
@@ -195,4 +263,21 @@ import UIKit
         let horizontalSizeClass: UserInterfaceSizeClass
         let verticalSizeClass: UserInterfaceSizeClass
     }
+}
+
+extension GatewayDiscoveryModel.DiscoveredGateway {
+    fileprivate static let previewGateway = GatewayDiscoveryModel.DiscoveredGateway(
+        name: "Studio Gateway",
+        endpoint: .hostPort(
+            host: .name("openclaw.local", nil),
+            port: 18789),
+        stableID: "preview-gateway",
+        debugID: "openclaw.local",
+        lanHost: "openclaw.local",
+        tailnetDns: nil,
+        gatewayPort: 18789,
+        canvasPort: 18789,
+        tlsEnabled: true,
+        tlsFingerprintSha256: "preview",
+        cliPath: "/opt/homebrew/bin/openclaw")
 }
